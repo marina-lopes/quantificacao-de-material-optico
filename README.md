@@ -1,1 +1,3 @@
-# quantificacao-de-material-optico
+# Automação da Planilha de Quantificação de Material Óptico
+
+Trabalho Prático para a disciplina de Redes de Computadores.
