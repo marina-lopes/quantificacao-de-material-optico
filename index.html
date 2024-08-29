@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="">
+    <title>Quantificação de Material Óptico</title>
+</head>
+
+<body>
+    <h1>Automação da Planilha de Quantificação de Material Óptico</h1>
+    <form id="form">
+        <label for="num_pavimentos">Número de pavimentos da edificação:</label>
+        <input type="number" id="num_pavimentos" name="num_pavimentos" min="1" required /><br><br>
+
+        <label for="num_fibras">Número de pares de fibras que ficarão disponíveis:</label>
+        <input type="number" id="num_fibras" name="num_fibras" min="1" required /><br><br>
+
+        <label for="medida_basica">Medida básica para cálculo dos lances de cabo do backbone:</label>
+        <input type="text" id="medida_basica" name="medida_basica" required /><br><br>
+
+        <label for="especificacao_cabo">Especificação do cabo de fibra óptica:</label>
+        <input type="text" id="especificacao_cabo" name="especificacao_cabo" required /><br><br>
+
+        <label for="tipos_fo">Característica da fibra óptica (SM/MM):</label>
+        <select id="tipos_fo" required>
+            <option value="" disabled selected></option>
+            <option value="monomodo">Monomodo</option>
+            <option value="multimodo">Multimodo</option>
+        </select><br><br>
+
+        <label for="num_backbones_andar">Quantidade de backbones por andar:</label>
+        <input type="number" id="num_backbones_andar" name="num_backbones_andar" min="1" required /><br><br>
+
+        <label for="backbone_primario">Backbone primário:</label>
+        <input type="checkbox" id="backbone_primario" name="backbone_primario" /><br>
+
+        <label for="backbone_secundario">Backbone secundário:</label>
+        <input type="checkbox" id="backbone_secundario" name="backbone_secundario" /><br><br>
+    
+        <button type="submit">Calcular</button>
+        <p id="mensagem-erro">Selecione backbone primário e/ou secundário.</p>
+    </form>
+    <script src="script.js"></script>
+</body>
+
+</html>
