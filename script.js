@@ -167,7 +167,7 @@ function calcularInfraestrutura(pontosTelecom, pontosCFTV, pontosVoIP) {
 
     let numRJ45Femea = pontosRede;
 
-    let patchCordAzul = pontosTelecom * 2 - pontosVoIP - pontosCFTV; 
+    let patchCordAzul = pontosTelecom * 2 - pontosVoIP - pontosCFTV;
     let patchCableAzul = pontosRede - pontosCFTV - pontosVoIP; // Dados
     let patchCableVermelho = pontosCFTV; // CFTV
     let patchCableAmarelo = pontosVoIP; // VoIP
@@ -285,9 +285,9 @@ document.getElementById('form').addEventListener('submit', function (event) {
         <p>Etiquetas de identificação de Cabos UTP - MH: ${infraestrutura.etiquetasCabosUTP}</p>
 
         <h3>Materiais do Backbone Óptico</h3>
-        <p>Tipo de fibra óptica: ${backboneOptico.tipoFibra}</p>
-        <p>Tipo de fibra óptica externa: ${backboneOptico.tipoFibraExterna}</p>
-        <p>Especificação do cabo: ${especificacaoCaboEl}</p>
+        <p>Tipo de fibra óptica: ${backboneOptico.tipoFibra.tipo} - Janela: ${backboneOptico.tipoFibra.janela}</p>
+        <p>Tipo de fibra óptica externa: ${backboneOptico.tipoFibraExterna.tipo} - Janela: ${backboneOptico.tipoFibraExterna.janela}</p>
+        <p>Especificação do cabo: ${especificacaoCaboEl.value}</p>
         <p>Comprimento da fibra óptica: ${backboneOptico.comprimentoFibra} metros</p>
         <p>Chassi DIO com 24 portas - 1U - 19": ${backboneOptico.numDIO}</p>
         <p>Acoplador óptico 50x125µm - MM - LC - duplo: ${backboneOptico.numAcopladorMM}</p>
