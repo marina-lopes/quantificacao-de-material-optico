@@ -7,6 +7,8 @@ let velocidadeEl = document.getElementById('velocidade');
 let backboneSecundarioEl = document.getElementById('backbone_secundario');
 let distanciaPrimarioEl = document.getElementById('distancia_backbone_primario');
 let resultadoEl = document.getElementById('resultado');
+let infraestrutura;
+let backboneOptico;
 
 const peDireito = 5;
 
@@ -259,8 +261,8 @@ document.getElementById('form').addEventListener('submit', function (event) {
     const pontosCFTV = pontosCFTVEl.value === 'sim' ? Array.from(document.querySelectorAll('.cftv_pavimento')).reduce((acc, input) => acc + parseInt(input.value), 0) : 0;
     const pontosVoIP = pontosVoIPEl.value === 'sim' ? Array.from(document.querySelectorAll('.voip_pavimento')).reduce((acc, input) => acc + parseInt(input.value), 0) : 0;
 
-    let infraestrutura = calcularInfraestrutura(pontosTelecom, pontosCFTV, pontosVoIP);
-    let backboneOptico = calcularBackboneOptico(numPavimentos, pontosTelecom, pontosCFTV, pontosVoIP);
+    infraestrutura = calcularInfraestrutura(pontosTelecom, pontosCFTV, pontosVoIP);
+    backboneOptico = calcularBackboneOptico(numPavimentos, pontosTelecom, pontosCFTV, pontosVoIP);
 
     resultadoEl.innerHTML = `
         <h3>Materiais da Infraestrutura da Rede</h3>
@@ -302,4 +304,33 @@ document.getElementById('form').addEventListener('submit', function (event) {
         <p>Pigtail 50x125µm - SM - 1,5m - LC - simples: ${backboneOptico.numPigtailSMSimples}</p>        
         <p>Cordão Óptico 9x125µm - SM - 3m - LC - duplo: ${backboneOptico.numCordaoOpticoSM}</p>
     `;
+});
+
+
+const downloadXLSX = () => {
+    if(infraestrutura != null && backboneOptico != null){
+        workBook.Props = {
+            Title: 'Titulo',
+            Subject: 'Assunto',
+            Author:  'Autor',
+            CreateDate: new Date()
+        };
+        workBook.SheetNames.push('Relatório 1');
+        const dados = [
+            //linhas
+            ['Cabo UTP(cxs)', 'Espelhos 4x4', 'Tomada RJ45', 'Patch cord Azul', 
+             'Patch Cable Azul', 'Patch Cable Vermelho'], //colunas
+            [i.qtdeCaixasCabo, i.numEspelhos, i.numRJ45Femea, i.patchCordAzul, i.patchCableAzul, i.patchCableVermelho]
+        ];
+        const workSheet = XLSX.utils.aoa_to_sheet(dados);
+        workBook.Sheets['Relatório 1'] = workSheet;
+        XLSX.writeFile(workBook, 'Relatório 1.xlsx', {bookType: 'xlsx', type: 'bynary'})
+    }
+    
+    
+    
+};  
+
+document.getElementById('download').addEventListener('click', () => {
+    downloadXLSX();
 });
