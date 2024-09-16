@@ -105,6 +105,8 @@ function calcularNumeroFibrasDisponiveis(pontosTelecom, pontosCFTV, pontosVoIP) 
     if ((pontosRede - pontosCFTV - pontosVoIP) > 0) {
         totalFibras += 4;
     }
+
+    return totalFibras;
 }
 
 function definirTipoFibra(velocidade, distanciaPrimario) {
@@ -160,10 +162,10 @@ function definirTipoFibra(velocidade, distanciaPrimario) {
     };
 }
 
-function calcularInfraestrutura(pontosTelecom, pontosCFTV, pontosVoIP) {
+function calcularInfraestrutura(pontosTelecom, pontosCFTV, pontosVoIP, medidaBasica) {
     let pontosRede = pontosTelecom * 2;
 
-    let qtdeCaixasCabo = Math.ceil((medidaBasicaEl * pontosRede) / 305);
+    let qtdeCaixasCabo = Math.ceil((medidaBasica * pontosRede) / 305);
 
     let numEspelhos = pontosTelecom;
 
@@ -222,14 +224,17 @@ function calcularBackboneOptico(numPavimentos, pontosTelecom, pontosCFTV, pontos
     let comprimentoFibra = calcularComprimentoFibra(numPavimentos);
     let numFibras = calcularNumeroFibrasDisponiveis(pontosTelecom, pontosCFTV, pontosVoIP);
 
-    let tipoFibraExterna = definirTipoFibra(velocidade, distanciaPrimario);
     let tipoFibra = definirTipoFibra(velocidade, calcularComprimentoFibra(numPavimentos));
 
     let numDIO = Math.ceil(numPavimentos * numFibras / 24);
-    let numAcopladorMM = 0;
+    
+    let numAcopladorMM = numFibras * (numPavimentos - 1) / 2; 
     let numAcopladorSM = 0;
+    
     let numBandejasDIO = 0;
-    let numTO = 0;
+    
+    let numTO = numPavimentos - 1;
+    
     let numPigtailMMSimples = 0;
     let numPigtailMMDuplo = 0;
     let numCordaoOpticoMM = 0;
@@ -238,7 +243,6 @@ function calcularBackboneOptico(numPavimentos, pontosTelecom, pontosCFTV, pontos
 
     return {
         tipoFibra,
-        tipoFibraExterna,
         comprimentoFibra,
         numDIO,
         numAcopladorMM,
@@ -260,9 +264,10 @@ document.getElementById('form').addEventListener('submit', function (event) {
     const pontosTelecom = Array.from(document.querySelectorAll('.pontos_telecom')).reduce((acc, input) => acc + parseInt(input.value || 0), 0);
     const pontosCFTV = pontosCFTVEl.value === 'sim' ? Array.from(document.querySelectorAll('.cftv_pavimento')).reduce((acc, input) => acc + parseInt(input.value), 0) : 0;
     const pontosVoIP = pontosVoIPEl.value === 'sim' ? Array.from(document.querySelectorAll('.voip_pavimento')).reduce((acc, input) => acc + parseInt(input.value), 0) : 0;
+    const medidaBasica = parseInt(medidaBasicaEl.value);
 
-    infraestrutura = calcularInfraestrutura(pontosTelecom, pontosCFTV, pontosVoIP);
-    backboneOptico = calcularBackboneOptico(numPavimentos, pontosTelecom, pontosCFTV, pontosVoIP);
+    let infraestrutura = calcularInfraestrutura(pontosTelecom, pontosCFTV, pontosVoIP, medidaBasica);
+    let backboneOptico = calcularBackboneOptico(numPavimentos, pontosTelecom, pontosCFTV, pontosVoIP);
 
     resultadoEl.innerHTML = `
         <h3>Materiais da Infraestrutura da Rede</h3>
@@ -288,7 +293,6 @@ document.getElementById('form').addEventListener('submit', function (event) {
 
         <h3>Materiais do Backbone Óptico</h3>
         <p>Tipo de fibra óptica: ${backboneOptico.tipoFibra.tipo} - Janela: ${backboneOptico.tipoFibra.janela}</p>
-        <p>Tipo de fibra óptica externa: ${backboneOptico.tipoFibraExterna.tipo} - Janela: ${backboneOptico.tipoFibraExterna.janela}</p>
         <p>Especificação do cabo: ${especificacaoCaboEl.value}</p>
         <p>Comprimento da fibra óptica: ${backboneOptico.comprimentoFibra} metros</p>
         <p>Chassi DIO com 24 portas - 1U - 19": ${backboneOptico.numDIO}</p>
