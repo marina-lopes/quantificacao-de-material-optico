@@ -4,8 +4,7 @@
  h1{
    
     font-family: 'Helvetica', sans-serif;
-    padding-top: 30px;
-    margin-left: 1%;
+    padding-top: 15px;
     margin-bottom: 20px;
     margin-left: 5%;
  }
@@ -27,7 +26,6 @@
 
  }
  #form{
-    margin-left: 1%;
     background-color: rgb(230, 232, 233);
     font-family: 'Helvetica', sans-serif;
     width: 100%;
@@ -86,6 +84,7 @@ th, td{
    padding: 8px;
    text-align:left;
    background-color: rgb(230, 232, 233);
+   box-shadow: 0 4px 8px rgba(0, 0, 0.0, 0.1);
 }
 caption{
    font-family: 'Helvetica', sans-serif;
