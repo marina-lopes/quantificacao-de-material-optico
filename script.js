@@ -7,8 +7,6 @@ let velocidadeEl = document.getElementById('velocidade');
 let backboneSecundarioEl = document.getElementById('backbone_secundario');
 let distanciaPrimarioEl = document.getElementById('distancia_backbone_primario');
 let resultadoEl = document.getElementById('resultado');
-let infraestrutura;
-let backboneOptico;
 
 const peDireito = 5;
 
@@ -105,8 +103,6 @@ function calcularNumeroFibrasDisponiveis(pontosTelecom, pontosCFTV, pontosVoIP) 
     if ((pontosRede - pontosCFTV - pontosVoIP) > 0) {
         totalFibras += 4;
     }
-
-    return totalFibras;
 }
 
 function definirTipoFibra(velocidade, distanciaPrimario) {
@@ -162,10 +158,10 @@ function definirTipoFibra(velocidade, distanciaPrimario) {
     };
 }
 
-function calcularInfraestrutura(pontosTelecom, pontosCFTV, pontosVoIP, medidaBasica) {
+function calcularInfraestrutura(pontosTelecom, pontosCFTV, pontosVoIP) {
     let pontosRede = pontosTelecom * 2;
 
-    let qtdeCaixasCabo = Math.ceil((medidaBasica * pontosRede) / 305);
+    let qtdeCaixasCabo = Math.ceil((medidaBasicaEl * pontosRede) / 305);
 
     let numEspelhos = pontosTelecom;
 
@@ -224,17 +220,14 @@ function calcularBackboneOptico(numPavimentos, pontosTelecom, pontosCFTV, pontos
     let comprimentoFibra = calcularComprimentoFibra(numPavimentos);
     let numFibras = calcularNumeroFibrasDisponiveis(pontosTelecom, pontosCFTV, pontosVoIP);
 
+    let tipoFibraExterna = definirTipoFibra(velocidade, distanciaPrimario);
     let tipoFibra = definirTipoFibra(velocidade, calcularComprimentoFibra(numPavimentos));
 
     let numDIO = Math.ceil(numPavimentos * numFibras / 24);
-    
-    let numAcopladorMM = numFibras * (numPavimentos - 1) / 2; 
+    let numAcopladorMM = 0;
     let numAcopladorSM = 0;
-    
     let numBandejasDIO = 0;
-    
-    let numTO = numPavimentos - 1;
-    
+    let numTO = 0;
     let numPigtailMMSimples = 0;
     let numPigtailMMDuplo = 0;
     let numCordaoOpticoMM = 0;
@@ -243,6 +236,7 @@ function calcularBackboneOptico(numPavimentos, pontosTelecom, pontosCFTV, pontos
 
     return {
         tipoFibra,
+        tipoFibraExterna,
         comprimentoFibra,
         numDIO,
         numAcopladorMM,
@@ -264,9 +258,8 @@ document.getElementById('form').addEventListener('submit', function (event) {
     const pontosTelecom = Array.from(document.querySelectorAll('.pontos_telecom')).reduce((acc, input) => acc + parseInt(input.value || 0), 0);
     const pontosCFTV = pontosCFTVEl.value === 'sim' ? Array.from(document.querySelectorAll('.cftv_pavimento')).reduce((acc, input) => acc + parseInt(input.value), 0) : 0;
     const pontosVoIP = pontosVoIPEl.value === 'sim' ? Array.from(document.querySelectorAll('.voip_pavimento')).reduce((acc, input) => acc + parseInt(input.value), 0) : 0;
-    const medidaBasica = parseInt(medidaBasicaEl.value);
 
-    let infraestrutura = calcularInfraestrutura(pontosTelecom, pontosCFTV, pontosVoIP, medidaBasica);
+    let infraestrutura = calcularInfraestrutura(pontosTelecom, pontosCFTV, pontosVoIP);
     let backboneOptico = calcularBackboneOptico(numPavimentos, pontosTelecom, pontosCFTV, pontosVoIP);
 
     resultadoEl.innerHTML = `
@@ -293,6 +286,7 @@ document.getElementById('form').addEventListener('submit', function (event) {
 
         <h3>Materiais do Backbone Óptico</h3>
         <p>Tipo de fibra óptica: ${backboneOptico.tipoFibra.tipo} - Janela: ${backboneOptico.tipoFibra.janela}</p>
+        <p>Tipo de fibra óptica externa: ${backboneOptico.tipoFibraExterna.tipo} - Janela: ${backboneOptico.tipoFibraExterna.janela}</p>
         <p>Especificação do cabo: ${especificacaoCaboEl.value}</p>
         <p>Comprimento da fibra óptica: ${backboneOptico.comprimentoFibra} metros</p>
         <p>Chassi DIO com 24 portas - 1U - 19": ${backboneOptico.numDIO}</p>
@@ -312,26 +306,78 @@ document.getElementById('form').addEventListener('submit', function (event) {
 
 
 const downloadXLSX = () => {
-    if(infraestrutura != null && backboneOptico != null){
-        workBook.Props = {
-            Title: 'Titulo',
-            Subject: 'Assunto',
-            Author:  'Autor',
-            CreateDate: new Date()
-        };
-        workBook.SheetNames.push('Relatório 1');
-        const dados = [
-            //linhas
-            ['Cabo UTP(cxs)', 'Espelhos 4x4', 'Tomada RJ45', 'Patch cord Azul', 
-             'Patch Cable Azul', 'Patch Cable Vermelho'], //colunas
-            [i.qtdeCaixasCabo, i.numEspelhos, i.numRJ45Femea, i.patchCordAzul, i.patchCableAzul, i.patchCableVermelho]
-        ];
-        const workSheet = XLSX.utils.aoa_to_sheet(dados);
-        workBook.Sheets['Relatório 1'] = workSheet;
-        XLSX.writeFile(workBook, 'Relatório 1.xlsx', {bookType: 'xlsx', type: 'bynary'})
-    }
-    
-    
+    var workSheet;
+    const workBook = XLSX.utils.book_new();
+    workBook.Props = {
+        Title: 'Titulo',
+        Subject: 'Assunto',
+        Author:  'Autor',
+        CreateDate: new Date()
+    };
+
+    //tabela infraestrutura
+    workBook.SheetNames.push('Infraestrutura');
+    var dados = [
+        //linhas
+        ['Descrição', 'Item', 'Quantidade'], //colunas
+        ['Cabo UTP categoria 6 (MH)', 'Caixa(s)', ''],
+        ['Tomada RJ45 fêmea categoria 6', 'Unidades(s)', ''],
+        ['Espelhos 4x4 - 2 furações/entradas', 'Unidades(s)', ''],
+        ['Patch Cord categoria 6 - azul - 3m', 'Unidades(s)', ''],
+        ['Patch Panel categoria 6 - 24 portas (PPMH)', 'Unidades(s)', ''],
+        ['Organizador de Cabo Frontal - 1U', 'Unidades(s)', ''],
+        ['Bandeja Fixa', 'Unidades(s)', ''],
+        ['Patch Cable categoria 6 - Azul/Dados - 2,5m', 'Unidades(s)', ''],
+        ['Patch Cable categoria 6 - Amarelo/VoIP - 2,5m', 'Unidades(s)', ''],
+        ['Patch Cable categoria 6 - Vermelho/CFTV - 2,5m', 'Unidades(s)', ''],
+        ['Rack Fechado - 19" x 32U', 'Unidades(s)', ''],
+        ['Exaustor - 19"', 'Unidades(s)', '']
+    ];
+    workSheet = XLSX.utils.aoa_to_sheet(dados);
+    workBook.Sheets['Infraestrutura'] = workSheet;
+
+    //tabela backbone
+    workBook.SheetNames.push('Backbone');
+    dados = [
+        //linhas
+        ['Descrição', 'Item', 'Quantidade'], //colunas
+        ['Cabo de Fibra Óptica Tight Buffer - FOMMIG - 50 x 125µm - 8 fibras', 'Metro(s)', ''],
+        ['Chassi DIO - 24 portas - 1U - 9"', 'Unidades(s)',''],
+        ['Acoplador Óptico 50 x 125µm - MM - LC - Duplo', 'Unidades(s)', ''],
+        ['Acoplador Óptico 9 x 125µm - SM - LC - Duplo', 'Unidades(s)', ''],
+        ['Bandeja para Emenda de Fibra no DIO - até 12 emendas', 'Unidades(s)', ''],
+        ['Terminador Óptico - para 8 fibras', 'Unidades(s)', ''],
+        ['Pig Tail 50 x 125µm - MM - 1,5m - Simples - Conector LC', 'Unidades(s)', ''],
+        ['Pig Tail 50 x 125µm - MM 3,0m - Duplo - Conector LC', 'Unidades(s)', ''],
+        ['Pig Tail 50 x 125µm- SM - 1,5m - Simples - Conector LC', 'Unidades(s)', ''],
+        ['Cordão Óptico 50 x 125µm - MM - 3m - Duplo - Conector LC', 'Unidades(s)', ''],
+        ['Cordão Óptico 9 x 125µm - SM - 3m - Duplo - Conector LC', 'Unidades(s)', '']
+    ]
+    workSheet = XLSX.utils.aoa_to_sheet(dados);
+    workBook.Sheets['Backbone'] = workSheet;
+
+    //tabela miscelanea
+    workBook.SheetNames.push('Miscelânea');
+    dados = [
+        //linhas
+        ['Descrição', 'Item', 'Quantidade'], //colunas
+        ['Etiquetas de Identificação da Porta - Patch Panel', 'Unidades(s)', ''],
+        ['Etiquetas de Identificação - Patch Cable', 'Unidades(s)', ''],
+        ['Etiquetas de Identificação - Patch Panel', 'Unidades(s)', ''],
+        ['Etiquetas de Identificação - Tomadas e Espelhos', 'Unidades(s)', ''],
+        ['Etiquetas de Identificação - Cabos UTP - MH', 'Unidades(s)', ''],
+        ['Etiquetas - Cordões Ópticos e Pigtails - TO', 'Unidades(s)', ''],
+        ['Etiquetas - Portas do DIO', 'Unidades(s)', ''],
+        ['Abraçadeiras Plásticas (Pacote com 100 unidades)', 'Pacote(s)', ''],
+        ['Abraçadeiras de Velcro (Rolo de 3m)', 'Rolo(s)', ''],
+        ['Régua - 6 tomadas - Filtro de Linha', 'Unidades(s)', ''],
+        ['Régua de Fechamento - 1U', 'Unidades(s)', ''],
+        ['Porca Gaiola (Pacote com 100 unidades)', 'Pacote(s)', '']
+    ]
+    workSheet = XLSX.utils.aoa_to_sheet(dados);
+    workBook.Sheets['Miscelânea'] = workSheet;
+
+    XLSX.writeFile(workBook, 'Relatório 1.xlsx', {bookType: 'xlsx', type: 'bynary'})
     
 };  
 
