@@ -85,7 +85,14 @@ th, td{
    text-align:left;
    background-color: rgb(230, 232, 233);
    box-shadow: 0 4px 8px rgba(0, 0, 0.0, 0.1);
+   font-family: 'Helvetica', sans-serif;
+   
 }
 caption{
    font-family: 'Helvetica', sans-serif;
+   
+}
+
+th:first-child, td:first-child {
+   width: 60%; 
 }
