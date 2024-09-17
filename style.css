@@ -31,7 +31,6 @@
     font-family: 'Helvetica', sans-serif;
     width: 100%;
     max-width: 500px;
-    padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0.3, 0.3);
 
  }
@@ -79,3 +78,10 @@ button:hover {
     flex-direction: column;
     justify-content: flex-start;
  }
+
+th, td{
+   border: 1px solid rgb(255, 255, 255);
+   padding: 8px;
+   text-align:left;
+   background-color: rgb(230, 232, 233);
+}
