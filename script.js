@@ -280,7 +280,7 @@ document.getElementById('form').addEventListener('submit', function (event) {
             <tr>
                 <td>Cabo de Fibra Óptica Tight Buffer - FOMMIG - 50 x 125µm - 8 fibras</td>
                 <td>Metro(s)</td>
-                <td>${backboneOptico.numFibras}</td>
+                <td>${backboneOptico.comprimentoFibra}</td>
             </tr>
             <tr>
                 <td>Chassi DIO - 24 portas - 1U - 9"</td>
