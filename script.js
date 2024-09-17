@@ -278,7 +278,7 @@ document.getElementById('form').addEventListener('submit', function (event) {
                 <th>Quantidade</th>
             </tr>
             <tr>
-                <td>Cabo de Fibra Óptica Tight Buffer - FOMMIG - 50 x 125µm - 8 fibras</td>
+                <td>Cabo de Fibra Óptica ${especificacaoCaboEl.value} - ${backboneOptico.tipoFibra.tipo} - ${backboneOptico.tipoFibra.janela}</td>
                 <td>Metro(s)</td>
                 <td>${backboneOptico.comprimentoFibra}</td>
             </tr>
