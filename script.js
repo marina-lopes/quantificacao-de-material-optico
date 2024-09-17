@@ -228,18 +228,18 @@ function calcularBackboneOptico(numPavimentos, pontosTelecom, pontosCFTV, pontos
 
     let numDIO = Math.ceil(numPavimentos * numFibras / 24);
     
-    let numAcopladorMM = numFibras * (numPavimentos - 1) / 2; 
-    let numAcopladorSM = 0;
+    let numAcopladorMM = numFibras * (numPavimentos - 1) / 2;
+    let numAcopladorSM = numFibras / 2;
     
     let numBandejasDIO = Math.ceil(numFibras * numPavimentos / 12);
     
-    let numTO = numPavimentos - 1;
+    let numTO = Math.ceil(numFibras * (numPavimentos - 1) / 8);
     
-    let numPigtailMMSimples = 0;
-    let numPigtailMMDuplo = 0;
-    let numCordaoOpticoMM = 0;
-    let numPigtailSMSimples = 0;
-    let numCordaoOpticoSM = 0;
+    let numPigtailMMSimples = numFibras * (numPavimentos - 1);
+    let numPigtailMMDuplo = numFibras * (numPavimentos - 1) / 2;
+    let numPigtailSMSimples = numFibras;
+    let numCordaoOpticoSM = numFibras / 2;
+    let numCordaoOpticoMM = numTO * numFibras / 2 + numCordaoOpticoSM;
 
     return {
         tipoFibra,
