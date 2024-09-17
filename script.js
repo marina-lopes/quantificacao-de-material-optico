@@ -7,6 +7,8 @@ let velocidadeEl = document.getElementById('velocidade');
 let backboneSecundarioEl = document.getElementById('backbone_secundario');
 let distanciaPrimarioEl = document.getElementById('distancia_backbone_primario');
 let resultadoEl = document.getElementById('resultado');
+var infraestrutura;
+var backboneOptico;
 
 const peDireito = 5;
 
@@ -103,6 +105,8 @@ function calcularNumeroFibrasDisponiveis(pontosTelecom, pontosCFTV, pontosVoIP) 
     if ((pontosRede - pontosCFTV - pontosVoIP) > 0) {
         totalFibras += 4;
     }
+
+    return totalFibras;
 }
 
 function definirTipoFibra(velocidade, distanciaPrimario) {
@@ -158,10 +162,10 @@ function definirTipoFibra(velocidade, distanciaPrimario) {
     };
 }
 
-function calcularInfraestrutura(pontosTelecom, pontosCFTV, pontosVoIP) {
+function calcularInfraestrutura(pontosTelecom, pontosCFTV, pontosVoIP, medidaBasica) {
     let pontosRede = pontosTelecom * 2;
 
-    let qtdeCaixasCabo = Math.ceil((medidaBasicaEl * pontosRede) / 305);
+    let qtdeCaixasCabo = Math.ceil((medidaBasica * pontosRede) / 305);
 
     let numEspelhos = pontosTelecom;
 
@@ -220,14 +224,17 @@ function calcularBackboneOptico(numPavimentos, pontosTelecom, pontosCFTV, pontos
     let comprimentoFibra = calcularComprimentoFibra(numPavimentos);
     let numFibras = calcularNumeroFibrasDisponiveis(pontosTelecom, pontosCFTV, pontosVoIP);
 
-    let tipoFibraExterna = definirTipoFibra(velocidade, distanciaPrimario);
     let tipoFibra = definirTipoFibra(velocidade, calcularComprimentoFibra(numPavimentos));
 
     let numDIO = Math.ceil(numPavimentos * numFibras / 24);
-    let numAcopladorMM = 0;
+    
+    let numAcopladorMM = numFibras * (numPavimentos - 1) / 2; 
     let numAcopladorSM = 0;
-    let numBandejasDIO = 0;
-    let numTO = 0;
+    
+    let numBandejasDIO = Math.ceil(numFibras * numPavimentos / 12);
+    
+    let numTO = numPavimentos - 1;
+    
     let numPigtailMMSimples = 0;
     let numPigtailMMDuplo = 0;
     let numCordaoOpticoMM = 0;
@@ -236,7 +243,6 @@ function calcularBackboneOptico(numPavimentos, pontosTelecom, pontosCFTV, pontos
 
     return {
         tipoFibra,
-        tipoFibraExterna,
         comprimentoFibra,
         numDIO,
         numAcopladorMM,
@@ -258,127 +264,250 @@ document.getElementById('form').addEventListener('submit', function (event) {
     const pontosTelecom = Array.from(document.querySelectorAll('.pontos_telecom')).reduce((acc, input) => acc + parseInt(input.value || 0), 0);
     const pontosCFTV = pontosCFTVEl.value === 'sim' ? Array.from(document.querySelectorAll('.cftv_pavimento')).reduce((acc, input) => acc + parseInt(input.value), 0) : 0;
     const pontosVoIP = pontosVoIPEl.value === 'sim' ? Array.from(document.querySelectorAll('.voip_pavimento')).reduce((acc, input) => acc + parseInt(input.value), 0) : 0;
+    const medidaBasica = parseInt(medidaBasicaEl.value);
 
-    let infraestrutura = calcularInfraestrutura(pontosTelecom, pontosCFTV, pontosVoIP);
-    let backboneOptico = calcularBackboneOptico(numPavimentos, pontosTelecom, pontosCFTV, pontosVoIP);
+    infraestrutura = calcularInfraestrutura(pontosTelecom, pontosCFTV, pontosVoIP, medidaBasica);
+    backboneOptico = calcularBackboneOptico(numPavimentos, pontosTelecom, pontosCFTV, pontosVoIP);
 
     resultadoEl.innerHTML = `
-        <h3>Materiais da Infraestrutura da Rede</h3>
-        <p>Quantidade de cabo UTP cat. 6 (MH) (cxs):${infraestrutura.qtdeCaixasCabo}</p
-        <p>Espelhos 4x4 - 2 furações: ${infraestrutura.numEspelhos}</p>
-        <p>Tomada RJ45 fêmea cat. 6: ${infraestrutura.numRJ45Femea}</p>
-        <p>Patch Cord cat. 6, azul, 3m: ${infraestrutura.patchCordAzul}</p>
-        <p>Patch Cable cat. 6, Dados (azul) - 2,5m: ${infraestrutura.patchCableAzul}</p>
-        <p>Patch Cable cat. 6, CFTV (vermelho) - 2,5m: ${infraestrutura.patchCableVermelho}</p>
-        <p>Patch Cable cat. 6, VoIP (amarelo) - 2,5m: ${infraestrutura.patchCableAmarelo}</p>
-        <p>Patch Panel cat. 6, 12 portas (PPMH): ${infraestrutura.numPatchPanels}</p>
-        <p>Switch: ${infraestrutura.numSwitches}</p>
-        <p>Organizador de cabo frontal (1U): ${infraestrutura.numOrgFrontais}</p>
-        <p>Bandeja fixa: ${infraestrutura.numBandejas}</p>
-        <p>Exaustor 19": ${infraestrutura.numExaustores}</p>
-        <p>Rack fechado, largura 19" (em U): ${infraestrutura.tamanhoRack}</p>
-        
-        <p>Etiquetas de identificação da porta do Patch Panel: ${infraestrutura.etiquetasPortasPP}</p>
-        <p>Etiquetas de identificação do Patch Panel: ${infraestrutura.etiquetasPP}</p>
-        <p>Etiquetas de identificação de Patch Cable: ${infraestrutura.etiquetasPatchCable}</p>
-        <p>Etiquetas de identificação de tomadas e espelhos: ${infraestrutura.etiquetasTomadasEspelhos}</p>
-        <p>Etiquetas de identificação de Cabos UTP - MH: ${infraestrutura.etiquetasCabosUTP}</p>
-
-        <h3>Materiais do Backbone Óptico</h3>
-        <p>Tipo de fibra óptica: ${backboneOptico.tipoFibra.tipo} - Janela: ${backboneOptico.tipoFibra.janela}</p>
-        <p>Tipo de fibra óptica externa: ${backboneOptico.tipoFibraExterna.tipo} - Janela: ${backboneOptico.tipoFibraExterna.janela}</p>
-        <p>Especificação do cabo: ${especificacaoCaboEl.value}</p>
-        <p>Comprimento da fibra óptica: ${backboneOptico.comprimentoFibra} metros</p>
-        <p>Chassi DIO com 24 portas - 1U - 19": ${backboneOptico.numDIO}</p>
-        <p>Acoplador óptico 50x125µm - MM - LC - duplo: ${backboneOptico.numAcopladorMM}</p>
-        <p>Acoplador óptico 9x125µm - SM - LC - duplo: ${backboneOptico.numAcopladorSM}</p>
-        <p>Bandeja para emenda de fibra no DIO (12 emendas): ${backboneOptico.numBandejasDIO}</p>
-        <p>Terminador Óptico para 8 fibras: ${backboneOptico.numTO}</p>
-
-        <p>Pigtail 50x125µm - MM - 1,5m - LC - simples: ${backboneOptico.numPigtailMMSimples}</p>
-        <p>Pigtail 50x125µm - MM - 1,5m - LC - duplo: ${backboneOptico.numPigtailMMDuplo}</p>
-        <p>Cordão Óptico 50x125µm - MM - 3m - LC - duplo: ${backboneOptico.numCordaoOpticoMM}</p>
-        
-        <p>Pigtail 50x125µm - SM - 1,5m - LC - simples: ${backboneOptico.numPigtailSMSimples}</p>        
-        <p>Cordão Óptico 9x125µm - SM - 3m - LC - duplo: ${backboneOptico.numCordaoOpticoSM}</p>
+        <table id="tabelaBackbone">
+            <caption>BACKBONE ÓPTICO</caption>
+            <tr>
+                <th>Descrição</th>
+                <th>Item</th>
+                <th>Quantidade</th>
+            </tr>
+            <tr>
+                <td>Cabo de Fibra Óptica Tight Buffer - FOMMIG - 50 x 125µm - 8 fibras</td>
+                <td>Metro(s)</td>
+                <td>${backboneOptico.numFibras}</td>
+            </tr>
+            <tr>
+                <td>Chassi DIO - 24 portas - 1U - 9"</td>
+                <td>Unidade(s)</td>
+                <td>${backboneOptico.numDIO}</td>
+            </tr>
+            <tr>
+                <td>Acoplador Óptico 50 x 125µm - MM - LC - Duplo</td>
+                <td>Unidade(s)</td>
+                <td>${backboneOptico.numAcopladorMM}</td>
+            </tr>
+            <tr>
+                <td>Acoplador Óptico 9 x 125µm - SM - LC - Duplo</td>
+                <td>Unidade(s)</td>
+                <td>${backboneOptico.numAcopladorSM}</td>
+            </tr>
+            <tr>
+                <td>Bandeja para Emenda de Fibra no DIO - até 12 emendas</td>
+                <td>Unidade(s)</td>
+                <td>${backboneOptico.numBandejasDIO}</td>
+            </tr>
+            <tr>
+                <td>Terminador Óptico - para 8 fibras</td>
+                <td>Unidade(s)</td>
+                <td>${backboneOptico.numTO}</td>
+            </tr>
+            <tr>
+                <td>Pig Tail 50 x 125µm - MM - 1,5m - Simples - Conector LC</td>
+                <td>Unidade(s)</td>
+                <td>${backboneOptico.numPigtailMMSimples}</td>
+            </tr>
+            <tr>
+                <td>Pig Tail 50 x 125µm - MM 3,0m - Duplo - Conector LC</td>
+                <td>Unidade(s)</td>
+                <td>${backboneOptico.numPigtailMMDuplo}</td>
+            </tr>
+            <tr>
+                <td>Pig Tail 50 x 125µm- SM - 1,5m - Simples - Conector LC</td>
+                <td>Unidade(s)</td>
+                <td>${backboneOptico.numPigtailSMSimples}</td>
+            </tr>
+            <tr>
+                <td>Cordão Óptico 50 x 125µm - MM - 3m - Duplo - Conector LC</td>
+                <td>Unidade(s)</td>
+                <td>${backboneOptico.numCordaoOpticoMM}</td>
+            </tr>
+            <tr>
+                <td>Cordão Óptico 9 x 125µm - SM - 3m - Duplo - Conector LC</td>
+                <td>Unidade(s)</td>
+                <td>${backboneOptico.numCordaoOpticoSM}</td>
+            </tr>
+        </table>
+        <table id="tabelaInfraestrutura">
+            <caption>MATERIAIS DA INFRAESTRUTURA DA REDE</caption>
+            <tr>
+                <th>Descrição</th>
+                <th>Item</th>
+                <th>Quantidade</th>
+            </tr>
+            <tr>
+                <td>Cabo UTP categoria 6 (MH)</td>
+                <td>Caixa(s)</td>
+                <td>${infraestrutura.qtdeCaixasCabo}</td>
+            </tr>
+            <tr>
+                <td>Tomada RJ45 fêmea categoria 6</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.numRJ45Femea}</td>
+            </tr>
+            <tr>
+                <td>Espelhos 4x4 - 2 furações/entradas</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.numEspelhos}</td>
+            </tr>
+            <tr>
+                <td>Patch Cord categoria 6 - azul - 3m</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.patchCordAzul}</td>
+            </tr>
+            <tr>
+                <td>Patch Panel categoria 6 - 24 portas (PPMH)</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.numPatchPanels}</td>
+            </tr>
+            <tr>
+                <td>Organizador de Cabo Frontal - 1U</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.numOrgFrontais}</td>
+            </tr>
+            <tr>
+                <td>Bandeja Fixa</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.numBandejas}</td>
+            </tr>
+            <tr>
+                <td>Patch Cable categoria 6 - Azul/Dados - 2,5m</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.patchCableAzul}</td>
+            </tr>
+            <tr>
+                <td>Patch Cable categoria 6 - Amarelo/VoIP - 2,5m</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.patchCableAmarelo}</td>
+            </tr>
+            <tr>
+                <td>Patch Cable categoria 6 - Vermelho/CFTV - 2,5m</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.patchCableVermelho}</td>
+            </tr>
+            <tr>
+                <td>Rack Fechado - 19" - em U</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.tamanhoRack}</td>
+            </tr>
+            <tr>
+                <td>Exaustor - 19"</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.numExaustores}</td>
+            </tr>
+        </table>
+        <table id="tabelaMiscelanea">
+            <caption>MISCELÂNEA</caption>
+            <tr>
+                <th>Descrição</th>
+                <th>Item</th>
+                <th>Quantidade</th>
+            </tr>
+            <tr>
+                <td>Etiquetas de Identificação da Porta - Patch Panel</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.etiquetasPortasPP}</td>
+            </tr>
+            <tr>
+                <td>Etiquetas de Identificação - Patch Cable</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.etiquetasPatchCable}</td>
+            </tr>
+            <tr>
+                <td>Etiquetas de Identificação - Patch Panel</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.etiquetasPP}</td>
+            </tr>
+            <tr>
+                <td>Etiquetas de Identificação - Tomadas e Espelhos</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.etiquetasTomadasEspelhos}</td>
+            </tr>
+            <tr>
+                <td>Etiquetas de Identificação - Cabos UTP - MH</td>
+                <td>Unidade(s)</td>
+                <td>${infraestrutura.etiquetasCabosUTP}</td>
+            </tr>
+        </table>
     `;
 });
 
-
 const downloadXLSX = () => {
-    var workSheet;
-    const workBook = XLSX.utils.book_new();
-    workBook.Props = {
-        Title: 'Titulo',
-        Subject: 'Assunto',
-        Author:  'Autor',
-        CreateDate: new Date()
-    };
+    if(infraestrutura === null){
+       alert("Não há dados");
+    }else{
+        var workSheet;
+        const workBook = XLSX.utils.book_new();
+        workBook.Props = {
+            Title: 'Titulo',
+            Subject: 'Assunto',
+            Author:  'Autor',
+            CreateDate: new Date()
+        };
 
-    //tabela infraestrutura
-    workBook.SheetNames.push('Infraestrutura');
-    var dados = [
-        //linhas
-        ['Descrição', 'Item', 'Quantidade'], //colunas
-        ['Cabo UTP categoria 6 (MH)', 'Caixa(s)', ''],
-        ['Tomada RJ45 fêmea categoria 6', 'Unidades(s)', ''],
-        ['Espelhos 4x4 - 2 furações/entradas', 'Unidades(s)', ''],
-        ['Patch Cord categoria 6 - azul - 3m', 'Unidades(s)', ''],
-        ['Patch Panel categoria 6 - 24 portas (PPMH)', 'Unidades(s)', ''],
-        ['Organizador de Cabo Frontal - 1U', 'Unidades(s)', ''],
-        ['Bandeja Fixa', 'Unidades(s)', ''],
-        ['Patch Cable categoria 6 - Azul/Dados - 2,5m', 'Unidades(s)', ''],
-        ['Patch Cable categoria 6 - Amarelo/VoIP - 2,5m', 'Unidades(s)', ''],
-        ['Patch Cable categoria 6 - Vermelho/CFTV - 2,5m', 'Unidades(s)', ''],
-        ['Rack Fechado - 19" x 32U', 'Unidades(s)', ''],
-        ['Exaustor - 19"', 'Unidades(s)', '']
-    ];
-    workSheet = XLSX.utils.aoa_to_sheet(dados);
-    workBook.Sheets['Infraestrutura'] = workSheet;
+        //tabela backbone
+        workBook.SheetNames.push('Backbone');
+        dados = [
+            //linhas
+            ['Descrição', 'Item', 'Quantidade'], //colunas
+            ['Cabo de Fibra Óptica Tight Buffer - FOMMIG - 50 x 125µm - 8 fibras', 'Metro(s)', backboneOptico.numFibras],
+            ['Chassi DIO - 24 portas - 1U - 9"', 'Unidades(s)', backboneOptico.numDIO],
+            ['Acoplador Óptico 50 x 125µm - MM - LC - Duplo', 'Unidades(s)', backboneOptico.numAcopladorMM],
+            ['Acoplador Óptico 9 x 125µm - SM - LC - Duplo', 'Unidades(s)', backboneOptico.numAcopladorSM],
+            ['Bandeja para Emenda de Fibra no DIO - até 12 emendas', 'Unidades(s)', backboneOptico.numBandejasDIO],
+            ['Terminador Óptico - para 8 fibras', 'Unidades(s)', backboneOptico.numTO],
+            ['Pig Tail 50 x 125µm - MM - 1,5m - Simples - Conector LC', 'Unidades(s)', backboneOptico.numPigtailMMSimples],
+            ['Pig Tail 50 x 125µm - MM 3,0m - Duplo - Conector LC', 'Unidades(s)', backboneOptico.numPigtailMMDuplo],
+            ['Pig Tail 50 x 125µm- SM - 1,5m - Simples - Conector LC', 'Unidades(s)', backboneOptico.numPigtailSMSimples],
+            ['Cordão Óptico 50 x 125µm - MM - 3m - Duplo - Conector LC', 'Unidades(s)', backboneOptico.numCordaoOpticoMM],
+            ['Cordão Óptico 9 x 125µm - SM - 3m - Duplo - Conector LC', 'Unidades(s)', backboneOptico.numCordaoOpticoSM]
+        ]
+        workSheet = XLSX.utils.aoa_to_sheet(dados);
+        workBook.Sheets['Backbone'] = workSheet;
 
-    //tabela backbone
-    workBook.SheetNames.push('Backbone');
-    dados = [
-        //linhas
-        ['Descrição', 'Item', 'Quantidade'], //colunas
-        ['Cabo de Fibra Óptica Tight Buffer - FOMMIG - 50 x 125µm - 8 fibras', 'Metro(s)', ''],
-        ['Chassi DIO - 24 portas - 1U - 9"', 'Unidades(s)',''],
-        ['Acoplador Óptico 50 x 125µm - MM - LC - Duplo', 'Unidades(s)', ''],
-        ['Acoplador Óptico 9 x 125µm - SM - LC - Duplo', 'Unidades(s)', ''],
-        ['Bandeja para Emenda de Fibra no DIO - até 12 emendas', 'Unidades(s)', ''],
-        ['Terminador Óptico - para 8 fibras', 'Unidades(s)', ''],
-        ['Pig Tail 50 x 125µm - MM - 1,5m - Simples - Conector LC', 'Unidades(s)', ''],
-        ['Pig Tail 50 x 125µm - MM 3,0m - Duplo - Conector LC', 'Unidades(s)', ''],
-        ['Pig Tail 50 x 125µm- SM - 1,5m - Simples - Conector LC', 'Unidades(s)', ''],
-        ['Cordão Óptico 50 x 125µm - MM - 3m - Duplo - Conector LC', 'Unidades(s)', ''],
-        ['Cordão Óptico 9 x 125µm - SM - 3m - Duplo - Conector LC', 'Unidades(s)', '']
-    ]
-    workSheet = XLSX.utils.aoa_to_sheet(dados);
-    workBook.Sheets['Backbone'] = workSheet;
 
-    //tabela miscelanea
-    workBook.SheetNames.push('Miscelânea');
-    dados = [
-        //linhas
-        ['Descrição', 'Item', 'Quantidade'], //colunas
-        ['Etiquetas de Identificação da Porta - Patch Panel', 'Unidades(s)', ''],
-        ['Etiquetas de Identificação - Patch Cable', 'Unidades(s)', ''],
-        ['Etiquetas de Identificação - Patch Panel', 'Unidades(s)', ''],
-        ['Etiquetas de Identificação - Tomadas e Espelhos', 'Unidades(s)', ''],
-        ['Etiquetas de Identificação - Cabos UTP - MH', 'Unidades(s)', ''],
-        ['Etiquetas - Cordões Ópticos e Pigtails - TO', 'Unidades(s)', ''],
-        ['Etiquetas - Portas do DIO', 'Unidades(s)', ''],
-        ['Abraçadeiras Plásticas (Pacote com 100 unidades)', 'Pacote(s)', ''],
-        ['Abraçadeiras de Velcro (Rolo de 3m)', 'Rolo(s)', ''],
-        ['Régua - 6 tomadas - Filtro de Linha', 'Unidades(s)', ''],
-        ['Régua de Fechamento - 1U', 'Unidades(s)', ''],
-        ['Porca Gaiola (Pacote com 100 unidades)', 'Pacote(s)', '']
-    ]
-    workSheet = XLSX.utils.aoa_to_sheet(dados);
-    workBook.Sheets['Miscelânea'] = workSheet;
+        //tabela infraestrutura
+        workBook.SheetNames.push('Infraestrutura');
+        var dados = [
+            //linhas
+            ['Descrição', 'Item', 'Quantidade'], //colunas
+            ['Cabo UTP categoria 6 (MH)', 'Caixa(s)', infraestrutura.qtdeCaixasCabo],
+            ['Tomada RJ45 fêmea categoria 6', 'Unidades(s)', infraestrutura.numRJ45Femea],
+            ['Espelhos 4x4 - 2 furações/entradas', 'Unidades(s)', infraestrutura.numEspelhos],
+            ['Patch Cord categoria 6 - azul - 3m', 'Unidades(s)', infraestrutura.patchCordAzul],
+            ['Patch Panel categoria 6 - 24 portas (PPMH)', 'Unidades(s)', infraestrutura.numPatchPanels],
+            ['Organizador de Cabo Frontal - 1U', 'Unidades(s)', infraestrutura.numOrgFrontais],
+            ['Bandeja Fixa', 'Unidades(s)', infraestrutura.numBandejas],
+            ['Patch Cable categoria 6 - Azul/Dados - 2,5m', 'Unidades(s)', infraestrutura.patchCableAzul],
+            ['Patch Cable categoria 6 - Amarelo/VoIP - 2,5m', 'Unidades(s)', infraestrutura.patchCableAmarelo],
+            ['Patch Cable categoria 6 - Vermelho/CFTV - 2,5m', 'Unidades(s)', infraestrutura.patchCableVermelho],
+            ['Rack Fechado - kargura de 19" - em U', 'Unidades(s)', infraestrutura.tamanhoRack],
+            ['Exaustor - 19"', 'Unidades(s)', infraestrutura.numExaustores]
+        ];
+        workSheet = XLSX.utils.aoa_to_sheet(dados);
+        workBook.Sheets['Infraestrutura'] = workSheet;
 
-    XLSX.writeFile(workBook, 'Relatório 1.xlsx', {bookType: 'xlsx', type: 'bynary'})
-    
+        //tabela miscelanea
+        workBook.SheetNames.push('Miscelânea');
+        dados = [
+            //linhas
+            ['Descrição', 'Item', 'Quantidade'], //colunas
+            ['Etiquetas de Identificação da Porta - Patch Panel', 'Unidades(s)', infraestrutura.etiquetasPortasPP],
+            ['Etiquetas de Identificação - Patch Cable', 'Unidades(s)', infraestrutura.etiquetasPatchCable],
+            ['Etiquetas de Identificação - Patch Panel', 'Unidades(s)', infraestrutura.etiquetasPP],
+            ['Etiquetas de Identificação - Tomadas e Espelhos', 'Unidades(s)', infraestrutura.etiquetasTomadasEspelhos],
+            ['Etiquetas de Identificação - Cabos UTP - MH', 'Unidades(s)', infraestrutura.etiquetasCabosUTP]
+        ]
+        workSheet = XLSX.utils.aoa_to_sheet(dados);
+        workBook.Sheets['Miscelânea'] = workSheet;
+
+        XLSX.writeFile(workBook, 'Relatório 1.xlsx', {bookType: 'xlsx', type: 'bynary'})
+    }
 };  
 
 document.getElementById('download').addEventListener('click', () => {
