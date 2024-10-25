@@ -10,62 +10,129 @@
 </head>
 
 <body>
-    <h1>Quantificação de Material de Rede</h1>
-    <div class="container">
+    <h1>Quantificação de Material Óptico</h1>
+    <div class="container">    
     <form id="form">
-        <label for="num_pavimentos">Número de pavimentos: </label>
-        <input type="number" id="num_pavimentos" name="num_pavimentos" min="1" required /><br><br>
-
-        <div id="pavimentosInputContainer"></div>
-
-        <label for="pontos_cftv">Existem pontos de CFTV (Cabo Vermelho)? </label>
-        <select id="pontos_cftv" required>
-            <option value="nao">Não</option>
-            <option value="sim">Sim</option>
-        </select><br></br>
-
-        <div id="cftvsInputContainer" class="hidden"></div>
-
-        <label for="pontos_voip">Existem pontos de VoIP (Cabo Amarelo)? </label>
-        <select id="pontos_voip" required>
-            <option value="nao">Não</option>
-            <option value="sim">Sim</option>
-        </select><br><br>
-
-        <div id="voipsInputContainer" class="hidden"></div>
-
-        <label for="medida_basica">Medida básica para cálculo dos lances de cabo do backbone (distância média da malha horizontal): </label>
-        <input type="text" id="medida_basica" name="medida_basica" required /><br><br>
-
-        <label for="especificacao_cabo">Especificação do cabo de fibra óptica: </label>
-        <select id="especificacao_cabo" required>
-            <option value="Tight Buffer">Tight Buffer</option>
-            <option value="Loose">Loose</option>
-            <option value="Loose Auto-Sustentável">Loose Auto-Sustentável</option>
-        </select><br><br>
-
-        <label for="velocidade">Velocidade da fibra óptica (Mbps): </label>
-        <input type="number" id="velocidade" name="velocidade" min="1" required /><br><br>
-
         <label for="backbone_secundario">Possui backbone secundário? </label>
         <select id="backbone_secundario" required>
             <option value="nao">Não</option>
             <option value="sim">Sim</option>
         </select><br><br>
 
-        <div id="distanciaPrimarioContainer" class="hidden">
+        <!--BACKBONE PRIMÁRIO-->
+        <div id="backbonePrimarioContainer" class="hidden">
+            <p id="dados_primario">Dados do Backbone Primário</p>
+            <label for="tipos_fo_primario">Característica da fibra óptica (SM/MM):</label>
+            <select id="tipos_fo_primario" required>
+                <option value="monomodo">Monomodo</option>
+                <option value="multimodo">Multimodo</option>
+            </select><br><br>
+
+            <label for="especificacao_cabo_primario">Especificação do cabo de fibra óptica: </label>
+            <select id="especificacao_cabo_primario" required>
+                <option value="Loose">Loose</option>
+                <option value="Loose Auto-Sustentável">Loose Auto-Sustentável</option>
+            </select><br><br>
+            
             <label for="distancia_backbone_primario">Distância do backbone primário (metros):</label>
             <input type="number" id="distancia_backbone_primario"><br>
         </div>
 
+        <!--BACKBONE SECUNDÁRIO-->
+        <label for="num_pavimentos">Número de pavimentos: </label>
+        <input type="number" id="num_pavimentos" name="num_pavimentos" min="1" required /><br><br>
+
+        <label for="medida_basica">Medida básica para cálculo dos lances de cabo do backbone (metros): </label>
+        <input type="text" id="medida_basica" name="medida_basica" required /><br><br>
+
+        <label for="num_fibras">Número de fibras disponíveis: </label>
+        <input type="number" id="num_fibras" name="num_fibras" min="1" required /><br><br>
+
+        <label for="especificacao_cabo">Especificação do cabo de fibra óptica: </label>
+        <select id="especificacao_cabo" required>
+            <option value="Tight Buffer">Tight Buffer</option>
+        </select><br><br>
+
+        <label for="tipos_fo">Característica da fibra óptica (SM/MM):</label>
+        <select id="tipos_fo" required>
+            <option value="" disabled selected></option>
+            <option value="monomodo">Monomodo</option>
+            <option value="multimodo">Multimodo</option>
+        </select><br><br>
+
         <button type="submit">Calcular</button>
+        <button id="download">Baixar planilha</button>
     </form>
 
-    <h2>Resultado</h2>
-    <div id="resultado" class="result"></div>
+    <div id="resultado" class="result">
+        <table id="tabelaBackbone">
+            <caption>BACKBONE ÓPTICO</caption>
+            <tr>
+                <th>Descrição</th>
+                <th>Item</th>
+                <th>Quantidade</th>
+            </tr>
+            <tr>
+                <td>Cabo de Fibra Óptica Tight Buffer - FOMMIG - 50 x 125µm - 8 fibras</td>
+                <td>Metro(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Chassi DIO - 24 portas - 1U - 9"</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Acoplador Óptico 50 x 125µm - MM - LC - Duplo</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Acoplador Óptico 9 x 125µm - SM - LC - Duplo</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Bandeja para Emenda de Fibra no DIO - até 12 emendas</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Terminador Óptico - para 8 fibras</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Pig Tail 50 x 125µm - MM - 1,5m - Simples - Conector LC</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Pig Tail 50 x 125µm - MM 3,0m - Duplo - Conector LC</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Pig Tail 50 x 125µm- SM - 1,5m - Simples - Conector LC</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Cordão Óptico 50 x 125µm - MM - 3m - Duplo - Conector LC</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Cordão Óptico 9 x 125µm - SM - 3m - Duplo - Conector LC</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+        </table>
+    </div>
     </div>
 
     <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js" integrity="sha512-jDEmOIskGs/j5S3wBWQAL4pOYy3S5a0y3Vav7BgXHnCVcUBXkf1OqzYS6njmDiKyqes22QEX8GSIZZ5pGk+9nA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </body>
 
 </html>
