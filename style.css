@@ -1,0 +1,110 @@
+.hidden {
+    display: none;
+}
+ h1{
+   
+    font-family: 'Helvetica', sans-serif;
+    padding-top: 15px;
+    margin-bottom: 20px;
+    margin-left: 5%;
+ }
+ body{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    margin: 0;
+    
+ }
+
+.container{
+    display: flex;
+    width: 100%;
+}
+ #form,  .result{
+    width: 48%;
+    padding: 20px;
+
+ }
+ #form{
+    background-color: rgb(230, 232, 233);
+    font-family: 'Helvetica', sans-serif;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0.3, 0.3);
+   margin-right: 10%;
+   margin-left: 5%;
+ }
+
+ label, input{
+    width: 100%;
+    margin-bottom: 10px;
+ }
+
+ input{
+    outline: none;
+    border:1px solid #ccc;
+    padding: 5px;
+    box-sizing: border-box;
+    background-color: 0;
+    outline: none; 
+ }
+
+input:focus {
+    border: 1px solid #007BFF;
+}
+
+button{
+    outline: none;
+    width: 100%;
+    background-color: rgb(91, 202, 91);
+    border:1px solid rgb(91, 202, 91);
+    height: 30px;
+    font-size: medium;
+    cursor: pointer;
+ }
+
+button:hover {
+    background-color: rgb(33, 155, 33);
+    border: 1px solid rgb(33, 155, 33);
+}
+
+ select{
+    outline: none;
+    border:1px solid #ccc;
+ }
+
+ .result{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+ }
+
+th, td{
+   border: 1px solid rgb(255, 255, 255);
+   padding: 8px;
+   text-align:left;
+   background-color: rgb(230, 232, 233);
+   box-shadow: 0 4px 8px rgba(0, 0, 0.0, 0.1);
+   font-family: 'Helvetica', sans-serif;
+   
+}
+caption{
+   font-family: 'Helvetica', sans-serif;
+   
+}
+
+th:first-child, td:first-child {
+   width: 60%; 
+}
+
+#backbonePrimarioContainer {
+   background-color: rgb(186, 191, 195);
+   padding: 0% 2% 2% 2%;
+   margin-bottom: 5%;
+}
+
+#dados_primario {
+   display: flex;
+   padding-top: 2%;
+   justify-content: center;
+}

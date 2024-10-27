@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="">
+    <title>Quantificação de Material Óptico</title>
+</head>
+
+<body>
+    <h1>Quantificação de Material Óptico</h1>
+    <div class="container">    
+    <form id="form">
+        <label for="backbone_secundario">Possui mais de um backbone primário? </label>
+        <select id="backbone_secundario" required>
+            <option value="nao">Não</option>
+            <option value="sim">Sim</option>
+        </select><br><br>
+
+        <!--BACKBONE PRIMÁRIO-->
+        <div id="backbonePrimarioContainer" class="hidden">
+            <p id="dados_primario">Dados do Backbone Primário</p>
+
+            <label for="especificacao_cabo_primario">Especificação do cabo de fibra óptica: </label>
+            <select id="especificacao_cabo_primario" required>
+                <option value="Loose">Loose</option>
+                <option value="Loose Auto-Sustentável">Loose Auto-Sustentável</option>
+            </select><br><br>
+            
+            <label for="distancia_backbone_primario">Distância do backbone primário (metros):</label>
+            <input type="number" id="distancia_backbone_primario"><br>
+        </div>
+
+        <!--BACKBONE SECUNDÁRIO-->
+        <label for="num_pavimentos">Número de pavimentos: </label>
+        <input type="number" id="num_pavimentos" name="num_pavimentos" min="1" required /><br><br>
+
+        <label for="tam_pe_direito">Medida do pé direito (em metros): </label>
+        <input type="number" id="tam_pe_direito" name="tam_pe_direito" min="1" required /><br><br>
+
+        <label for="num_fibras">Número de fibras disponíveis: </label>
+        <input type="number" id="num_fibras" name="num_fibras" min="1" required /><br><br>
+        
+        <button type="submit">Calcular</button>
+        <button id="download">Baixar planilha</button>
+    </form>
+
+    <div id="resultado" class="result">
+        <table id="tabelaBackbone">
+            <caption>BACKBONE ÓPTICO</caption>
+            <tr>
+                <th>Descrição</th>
+                <th>Item</th>
+                <th>Quantidade</th>
+            </tr>
+            <tr>
+                <td>Cabo de Fibra Óptica Tight Buffer - FOMMIG - 50 x 125µm - 8 fibras</td>
+                <td>Metro(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Chassi DIO - 24 portas - 1U - 9"</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Acoplador Óptico 50 x 125µm - MM - LC - Duplo</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Acoplador Óptico 9 x 125µm - SM - LC - Duplo</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Bandeja para Emenda de Fibra no DIO - até 12 emendas</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Terminador Óptico - para 8 fibras</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Pig Tail 50 x 125µm - MM - 1,5m - Simples - Conector LC</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Pig Tail 50 x 125µm - MM 3,0m - Duplo - Conector LC</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Pig Tail 50 x 125µm- SM - 1,5m - Simples - Conector LC</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Cordão Óptico 50 x 125µm - MM - 3m - Duplo - Conector LC</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Cordão Óptico 9 x 125µm - SM - 3m - Duplo - Conector LC</td>
+                <td>Unidade(s)</td>
+                <td>0</td>
+            </tr>
+        </table>
+    </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js" integrity="sha512-jDEmOIskGs/j5S3wBWQAL4pOYy3S5a0y3Vav7BgXHnCVcUBXkf1OqzYS6njmDiKyqes22QEX8GSIZZ5pGk+9nA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</body>
+
+</html>
