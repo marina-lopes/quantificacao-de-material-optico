@@ -96,3 +96,15 @@ caption{
 th:first-child, td:first-child {
    width: 60%; 
 }
+
+#backbonePrimarioContainer {
+   background-color: rgb(186, 191, 195);
+   padding: 0% 2% 2% 2%;
+   margin-bottom: 5%;
+}
+
+#dados_primario {
+   display: flex;
+   padding-top: 2%;
+   justify-content: center;
+}
