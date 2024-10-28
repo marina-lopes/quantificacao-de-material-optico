@@ -177,7 +177,7 @@ document.getElementById('form').addEventListener('submit', function (event) {
                 <td>${backboneOptico.numBandejasDIO}</td>
             </tr>
             <tr>
-                <td>Terminador Óptico - para 6 fibras</td>
+                <td>Terminador Óptico - para 8 fibras</td>
                 <td>Unidade(s)</td>
                 <td>${backboneOptico.numTO}</td>
             </tr>
