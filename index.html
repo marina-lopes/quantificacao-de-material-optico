@@ -10,264 +10,174 @@
 </head>
 
 <body>
-    <h1>Quantificação de Material de Rede</h1>
-    <div class="container">    
-    <form id="form">
-        <label for="num_pavimentos">Número de pavimentos: </label>
-        <input type="number" id="num_pavimentos" name="num_pavimentos" min="1" required /><br><br>
+    <h1>Quantificação de Material Óptico</h1>
+    <div class="container">
+        <form id="form">
+            <label for="backbone_secundario">Possui mais de um backbone primário? </label>
+            <select id="backbone_secundario" required>
+                <option value="nao">Não</option>
+                <option value="sim">Sim</option>
+            </select><br><br>
 
-        <div id="pavimentosInputContainer"></div>
+            <!--BACKBONE PRIMÁRIO-->
+            <div id="backbonePrimarioContainer" class="hidden">
+                <p id="dados_primario">Dados do Backbone Primário</p>
 
-        <label for="pontos_cftv">Existem pontos de CFTV (Cabo Vermelho)? </label>
-        <select id="pontos_cftv" required>
-            <option value="nao">Não</option>
-            <option value="sim">Sim</option>
-        </select><br></br>
 
-        <div id="cftvsInputContainer" class="hidden"></div>
+                <label for="tipos_fo_primario">Característica da fibra óptica (SM/MM):</label>
+                <select id="tipos_fo_primario" required>
+                    <option value="monomodo">Monomodo 9µm</option>
+                    <option value="multimodo">Multimodo 50µm</option>
+                </select><br><br>
 
-        <label for="pontos_voip">Existem pontos de VoIP (Cabo Amarelo)? </label>
-        <select id="pontos_voip" required>
-            <option value="nao">Não</option>
-            <option value="sim">Sim</option>
-        </select><br><br>
 
-        <div id="voipsInputContainer" class="hidden"></div>
+                <label for="especificacao_cabo_primario">Especificação do cabo de fibra óptica: </label>
+                <select id="especificacao_cabo_primario" required>
+                    <option value="Loose">Loose</option>
+                    <option value="Loose Auto-Sustentável">Loose Auto-Sustentável</option>
+                </select><br><br>
 
-        <label for="medida_basica">Medida básica para cálculo dos lances de cabo do backbone (distância média da malha horizontal): </label>
-        <input type="text" id="medida_basica" name="medida_basica" required /><br><br>
 
-        <label for="especificacao_cabo">Especificação do cabo de fibra óptica: </label>
-        <select id="especificacao_cabo" required>
-            <option value="Tight Buffer">Tight Buffer</option>
-            <option value="Loose">Loose</option>
-            <option value="Loose Auto-Sustentável">Loose Auto-Sustentável</option>
-        </select><br><br>
+                <label for="num_fibras_primario">Número de fibras disponíveis: </label>
+                <input type="number" id="num_fibras_primario" name="num_fibras_primario" min="1" /><br><br>
 
-        <label for="velocidade">Velocidade da fibra óptica (Mbps): </label>
-        <input type="number" id="velocidade" name="velocidade" min="1" required /><br><br>
 
-        <label for="backbone_secundario">Possui backbone secundário? </label>
-        <select id="backbone_secundario" required>
-            <option value="nao">Não</option>
-            <option value="sim">Sim</option>
-        </select><br><br>
+                <label for="distancia_backbone_primario">Distância do backbone primário (metros):</label>
+                <input type="number" id="distancia_backbone_primario"><br>
+            </div>
 
-        <div id="distanciaPrimarioContainer" class="hidden">
-            <label for="distancia_backbone_primario">Distância do backbone primário (metros):</label>
-            <input type="number" id="distancia_backbone_primario"><br>
+            <!--BACKBONE SECUNDÁRIO-->
+            <div id="backboneSecundarioContainer">
+                <label for="num_pavimentos">Número de pavimentos: </label>
+                <input type="number" id="num_pavimentos" name="num_pavimentos" min="1" required /><br><br>
+
+                <label for="tam_pe_direito">Medida do pé direito (em metros): </label>
+                <input type="number" id="tam_pe_direito" name="tam_pe_direito" min="1" required /><br><br>
+
+                <label for="num_fibras">Número de fibras disponíveis: </label>
+                <input type="number" id="num_fibras" name="num_fibras" min="1" required /><br><br>
+
+
+                <label for="tipos_fo">Característica da fibra óptica (SM/MM):</label>
+                <select id="tipos_fo" required>
+                    <option value="multimodo">Multimodo 50µm</option>
+                    <option value="monomodo">Monomodo 9µm</option>
+                </select><br><br>
+
+            </div>
+
+            <button type="submit">Calcular</button>
+            <button id="download">Baixar planilha</button>
+        </form>
+
+        <div id="resultado" class="result">
+            <table id="tabelaBackbone">
+                <caption>BACKBONE ÓPTICO</caption>
+                <!--
+                <tr>
+                    <th>Descrição</th>
+                    <th>Item</th>
+                    <th>Quantidade</th>
+                </tr>
+                <tr>
+                    <td>Cabo de Fibra Óptica</td>
+                    <td>Metro(s)</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Chassi DIO - 24 portas - 1U - 9"</td>
+                    <td>Unidade(s)</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Acoplador Óptico LC - Duplo</td>
+                    <td>Unidade(s)</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Bandeja para Emenda de Fibra no DIO - até 12 emendas</td>
+                    <td>Unidade(s)</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Pig Tail - Conector LC</td>
+                    <td>Unidade(s)</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Cordão Óptico - Duplo - Conector LC</td>
+                    <td>Unidade(s)</td>
+                    <td>0</td>
+                </tr>
+                -->
+                <tr>
+                    <th>Descrição</th>
+                    <th>Item</th>
+                    <th>Quantidade</th>
+                </tr>
+                <tr>
+                    <td>Cabo de Fibra Óptica Tight Buffer - FOMMIG - 50 x 125µm - 8 fibras</td>
+                    <td>Metro(s)</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Chassi DIO - 24 portas - 1U - 9"</td>
+                    <td>Unidade(s)</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Acoplador Óptico 50 x 125µm - MM - LC - Duplo</td>
+                    <td>Unidade(s)</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Acoplador Óptico 9 x 125µm - SM - LC - Duplo</td>
+                    <td>Unidade(s)</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Bandeja para Emenda de Fibra no DIO - até 12 emendas</td>
+                    <td>Unidade(s)</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Terminador Óptico - para 8 fibras</td>
+                    <td>Unidade(s)</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Pig Tail 50 x 125µm - MM - 1,5m - Simples - Conector LC</td>
+                    <td>Unidade(s)</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Pig Tail 50 x 125µm - MM 3,0m - Duplo - Conector LC</td>
+                    <td>Unidade(s)</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Pig Tail 50 x 125µm- SM - 1,5m - Simples - Conector LC</td>
+                    <td>Unidade(s)</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Cordão Óptico 50 x 125µm - MM - 3m - Duplo - Conector LC</td>
+                    <td>Unidade(s)</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Cordão Óptico 9 x 125µm - SM - 3m - Duplo - Conector LC</td>
+                    <td>Unidade(s)</td>
+                    <td>0</td>
+                </tr>
+            </table>
         </div>
-
-        <button type="submit">Calcular</button>
-        <button id="download">Baixar planilha</button>
-    </form>
-    <div id="resultado" class="result">
-        <table id="tabelaBackbone">
-            <caption>BACKBONE ÓPTICO</caption>
-            <tr>
-                <th>Descrição</th>
-                <th>Item</th>
-                <th>Quantidade</th>
-            </tr>
-            <tr>
-                <td>Cabo de Fibra Óptica Tight Buffer - FOMMIG - 50 x 125µm - 8 fibras</td>
-                <td>Metro(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Chassi DIO - 24 portas - 1U - 9"</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Acoplador Óptico 50 x 125µm - MM - LC - Duplo</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Acoplador Óptico 9 x 125µm - SM - LC - Duplo</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Bandeja para Emenda de Fibra no DIO - até 12 emendas</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Terminador Óptico - para 8 fibras</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Pig Tail 50 x 125µm - MM - 1,5m - Simples - Conector LC</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Pig Tail 50 x 125µm - MM 3,0m - Duplo - Conector LC</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Pig Tail 50 x 125µm- SM - 1,5m - Simples - Conector LC</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Cordão Óptico 50 x 125µm - MM - 3m - Duplo - Conector LC</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Cordão Óptico 9 x 125µm - SM - 3m - Duplo - Conector LC</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-        </table>
-        <table id="tabelaInfraestrutura">
-            <caption>MATERIAIS DA INFRAESTRUTURA DA REDE</caption>
-            <tr>
-                <th>Descrição</th>
-                <th>Item</th>
-                <th>Quantidade</th>
-            </tr>
-            <tr>
-                <td>Cabo UTP categoria 6 (MH)</td>
-                <td>Caixa(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Tomada RJ45 fêmea categoria 6</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Espelhos 4x4 - 2 furações/entradas</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Patch Cord categoria 6 - azul - 3m</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Patch Panel categoria 6 - 24 portas (PPMH)</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Organizador de Cabo Frontal - 1U</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Bandeja Fixa</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Patch Cable categoria 6 - Azul/Dados - 2,5m</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Patch Cable categoria 6 - Amarelo/VoIP - 2,5m</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Patch Cable categoria 6 - Vermelho/CFTV - 2,5m</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Rack Fechado - 19" x 32U</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Exaustor - 19"</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-        </table>
-        <table id="tabelaMiscelanea">
-            <caption>MISCELÂNEA</caption>
-            <tr>
-                <th>Descrição</th>
-                <th>Item</th>
-                <th>Quantidade</th>
-            </tr>
-            <tr>
-                <td>Etiquetas de Identificação da Porta - Patch Panel</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Etiquetas de Identificação - Patch Cable</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Etiquetas de Identificação - Patch Panel</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Etiquetas de Identificação - Tomadas e Espelhos</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Etiquetas de Identificação - Cabos UTP - MH</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Etiquetas - Cordões Ópticos e Pigtail's - TO</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Etiquetas - Portas do DIO</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Abraçadeiras Plásticas (Pacote com 100 unidades)</td>
-                <td>Pacote(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Abraçadeiras de Velcro (Rolo de 3m)</td>
-                <td>Rolo(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Régua - 6 tomadas - Filtro de Linha</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Régua de Fechamento - 1U</td>
-                <td>Unidade(s)</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Porca Gaiola (Pacote com 100 unidades)</td>
-                <td>Pacote(s)</td>
-                <td>0</td>
-            </tr>
-        </table>
     </div>
-    </div>
-
-    
 
     <script src="script.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js" integrity="sha512-jDEmOIskGs/j5S3wBWQAL4pOYy3S5a0y3Vav7BgXHnCVcUBXkf1OqzYS6njmDiKyqes22QEX8GSIZZ5pGk+9nA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"
+        integrity="sha512-jDEmOIskGs/j5S3wBWQAL4pOYy3S5a0y3Vav7BgXHnCVcUBXkf1OqzYS6njmDiKyqes22QEX8GSIZZ5pGk+9nA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </body>
 
 </html>
